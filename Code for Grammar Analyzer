@@ -1,0 +1,53 @@
+#import eplison
+def main():
+    grammar = {}
+    n = int(input("Enter number of productions: "))
+
+
+    for i in range(n):
+        prod = input(f"Enter production {i+1} : ")
+        left, right = prod.split("->")
+        grammar[left.strip()] = right.split("|")
+
+    print("\nGrammar productions:")
+    for left, rights in grammar.items():
+        print(f"{left} -> {' | '.join(rights)}")
+
+
+    print("\nChecking for Left Recursion:")
+    for left, rights in grammar.items():
+        left_rec = False
+        for r in rights:
+            if r.startswith(left):
+                print(f"  Left recursion found in {left} -> {r}")
+                left_rec = True
+                print("\nGrammar after removing left recursion:")
+                print(f"      {left} -> {r[1:]}{left}1")
+                print(f"      {left}1 -> {r[1:]}{left}1 | ε")
+        if not left_rec:
+            print(f"  No left recursion in {left}")
+
+    print("\nChecking for Left Factoring:")
+    for left, rights in grammar.items():
+        prefixes = [r[0] for r in rights if r != 'ε' and len(r) > 0]
+        if len(prefixes) != len(set(prefixes)):
+            print(f"  Left factoring needed in {left}")
+        else:
+            print(f"  No left factoring in {left}")
+
+    print("\nClassifying Grammar according to Chomsky hierarchy :")
+    type3 = True
+    for left, rights in grammar.items():
+        for r in rights:
+            if len(r) > 2:
+                type3 = False
+    if type3:
+        print("  Grammar Type: Type 3 (Regular)")
+    else:
+        print("  Grammar Type: Type 2 (Context-Free)")
+
+    print("\nAnalysis complete")
+
+# Run program
+if __name__ == "__main__":
+    main()
